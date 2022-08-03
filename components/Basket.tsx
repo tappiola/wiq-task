@@ -28,12 +28,12 @@ const BasketTitle = styled.h3`
 
 const BasketItem = styled.div`
   width: 100%;
-  clear: both;
-
-  padding-bottom: 2em;
   border-top: 1px solid grey;
-  vertical-align: center;
   line-height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3em;
 
   &:last-child {
     border-bottom: 1px solid grey;
@@ -41,28 +41,41 @@ const BasketItem = styled.div`
 `;
 
 const BasketItemDetails = styled.div`
-  float: left;
+`;
+
+const BasketItemDelete = styled.button`
+  margin-left: auto;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid grey;
+  padding: 4px 8px;
+
+  &:hover {
+    background-color: white;
+  }
 `;
 
 const BasketItemPrice = styled.div`
-  float: right;
+  flex-basis: 4em;
+  text-align: right;
 `;
 
 export const Basket = () => {
-  const { basket, toggleBasketModal } = useContext(BasketContext);
+  const { basket, removeFromBasket, toggleBasketModal } = useContext(BasketContext);
 
   return (
     <Background onClick={toggleBasketModal}>
       <Container onClick={(e) => e.stopPropagation()}>
         <BasketTitle>Basket</BasketTitle>
-        {basket?.map(({ name, price, quantity }, key) => (
+        {basket.length ? basket.map(({ name, price, quantity, productId }, key) => (
           <BasketItem key={key}>
             <BasketItemDetails>
               {quantity} x {name}
             </BasketItemDetails>
-            <BasketItemPrice>&pound;{(price / 100).toFixed(2)}</BasketItemPrice>
+              <BasketItemDelete onClick={() => removeFromBasket(productId)}>Delete</BasketItemDelete>
+            <BasketItemPrice>&pound;{(price * quantity / 100).toFixed(2)}</BasketItemPrice>
           </BasketItem>
-        ))}
+        )) : 'Your basket is empty'}
       </Container>
     </Background>
   );

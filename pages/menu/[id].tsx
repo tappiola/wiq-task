@@ -19,7 +19,7 @@ const Menu: NextPage = () => {
 
   const { addToCart } = useContext(BasketContext);
 
-  const { data: menuData } = useSwr<ProductResponse>(
+  const { data: menuData, error } = useSwr<ProductResponse>(
     `/api/menu/${id}`,
     fetcher
   );
@@ -33,20 +33,21 @@ const Menu: NextPage = () => {
 
       <PageGrid>
         <PageHeader>Marina Hotel and Restaurant</PageHeader>
-
-        <MenuSection>
-          {menuData?.products?.map((product) => (
-            <Card
-              onClick={addToCart(product)}
-              decoratorStyle="add"
-              key={product.id}
-            >
-              <h3>{product.name}</h3>
-              <p>{product.description}</p>
-            </Card>
-          ))}
-        </MenuSection>
-
+          {error
+              ? <p>Error...</p>
+              : <MenuSection>
+                  {menuData?.products?.map((product) => (
+                      <Card
+                          onClick={addToCart(product)}
+                          decoratorStyle="add"
+                          key={product.id}
+                      >
+                          <h3>{product.name}</h3>
+                          <p>{product.description}</p>
+                      </Card>
+                  ))}
+              </MenuSection>
+          }
         <Footer>Powered by wi-Q</Footer>
       </PageGrid>
     </>

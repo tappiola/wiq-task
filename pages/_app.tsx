@@ -7,14 +7,17 @@ import { Basket } from '../components/Basket';
 import '../styles/globals.css';
 
 interface IBasketState {
-  basket?: Array<BasketProduct>;
+  basket: Array<BasketProduct>;
   addToCart: (p: Product) => () => void;
+  removeFromBasket: (id: number) => void;
   toggleBasketModal: () => void;
 }
 
 export const BasketContext = React.createContext<IBasketState>({
-  addToCart: () => () => {},
-  toggleBasketModal: () => {},
+    basket: [],
+    addToCart: (p: Product) => () => {},
+    removeFromBasket: (id: number) => () => {},
+    toggleBasketModal: () => {},
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -24,13 +27,24 @@ function MyApp({ Component, pageProps }: AppProps) {
   const addToCart =
     ({ id, name, price }: Product) =>
     () => {
-      setBasket([...basket, { productId: id, name, price, quantity: 1 }]);
+      const currentQuantity = basket.find(({productId}) => productId === id)?.quantity || 0;
+      const product = {productId: id, name, price, quantity: currentQuantity + 1};
+
+      if (currentQuantity > 0) {
+          setBasket([...basket.filter(({productId}) => productId !== id), product]);
+      } else {
+        setBasket([...basket, product]);
+      }
     };
+
+  const removeFromBasket = (id: number) => {
+      setBasket([...basket.filter(({productId}) => productId !== id)]);
+  }
 
   const toggleBasketModal = () => setBasketVisible(!basketVisible);
 
   return (
-    <BasketContext.Provider value={{ basket, addToCart, toggleBasketModal }}>
+    <BasketContext.Provider value={{ basket, addToCart, removeFromBasket, toggleBasketModal }}>
       <Component {...pageProps} />
       {basketVisible && <Basket />}
     </BasketContext.Provider>

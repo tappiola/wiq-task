@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
@@ -43,11 +43,13 @@ export const PageHeader: React.FC<{
 }> = ({ children }) => {
   const { basket, toggleBasketModal } = useContext(BasketContext);
 
+  const basketCount = useMemo(() => basket.reduce((prevQuantity, {quantity}) => prevQuantity + quantity, 0), [basket]);
+
   return (
     <Container>
       <ShoppingCart onClick={toggleBasketModal}>
         <FontAwesomeIcon icon={solid('cart-shopping')} />
-        {basket?.length ? <CartBadge>{basket?.length}</CartBadge> : null}
+        {basket.length ? <CartBadge>{basketCount}</CartBadge> : null}
       </ShoppingCart>
       <h1>{children}</h1>
     </Container>
